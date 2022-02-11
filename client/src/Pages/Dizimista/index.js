@@ -1,13 +1,37 @@
+import { useForm } from "react-hook-form";
 import "./styles.css";
 
 function Dizimista() {
+  const { register, handleSubmit, setValue } = useForm();
+
+  const onSubmit = (event) => {
+    console.log(event)
+  }
+
+  const handleCep = (event) => {
+    const { value } = event.target
+
+    const cep = value.replace(/\D/g, "");
+
+    if (cep?.length !== 8) return; 
+    
+    fetch(`https://viacep.com.br/ws/${cep}/json/`)
+    .then(res => res.json()).then(data => {
+      setValue('address', data.logradouro)
+      setValue('address2', data.complemento)
+      setValue('district', data.bairro)
+      setValue('city', data.localidade)
+      setValue('uf', data.uf)
+    })
+  };
+
   return (
     <>
       <div className="container">
         <h1>Novo Dizimista</h1>
-        <form>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="row">
-            <label for="name">Nome Completo</label>
+            <label htmlFor="name">Nome Completo</label>
             <input
               type="text"
               name="name"
@@ -19,8 +43,13 @@ function Dizimista() {
           <div className="row col-2">
             <div className="form-subitens">
               <div>
-                <input type="radio" name="gender" id="male" value="Masculino" />
-                <label for="male">Masculino</label>
+                <input
+                  type="radio"
+                  name="gender"
+                  id="male"
+                  value="Masculino"
+                />
+                <label htmlFor="male">Masculino</label>
               </div>
               <div>
                 <input
@@ -29,11 +58,11 @@ function Dizimista() {
                   id="female"
                   value="Feminino"
                 />
-                <label for="female">Feminino</label>
+                <label htmlFor="female">Feminino</label>
               </div>
             </div>
             <div className="form-subitens">
-              <label for="birthday">Data de Nascimento </label>
+              <label htmlFor="birthday">Data de Nascimento </label>
               <input
                 type="date"
                 name="birthday"
@@ -44,20 +73,20 @@ function Dizimista() {
           </div>
           <div className="row col-3">
             <div>
-              <label for="address">Endereço</label>
+              <label htmlFor="address">Logradouro</label>
               <input
                 type="text"
-                name="address"
+                {... register('address')}
                 id="address"
                 placeholder="Rua/Avenida"
                 className="form-input"
               />
             </div>
             <div>
-              <label for="number">Número</label>
+              <label htmlFor="number">Número</label>
               <input
-                type="number"
-                name="number"
+                type="text"
+                {...register('number')}
                 id="number"
                 className="form-input"
               />
@@ -65,20 +94,20 @@ function Dizimista() {
           </div>
           <div className="row col-2">
             <div>
-              <label for="address2">Complemento</label>
+              <label htmlFor="address2">Complemento</label>
               <input
                 type="text"
-                name="address2"
+                {...register('address2')}
                 id="address2"
                 placeholder="Complemento"
                 className="form-input"
               />
             </div>
             <div>
-              <label for="district">Bairro</label>
+              <label htmlFor="district">Bairro</label>
               <input
                 type="text"
-                name="district"
+                {...register('district')}
                 id="district"
                 className="form-input"
               />
@@ -86,27 +115,34 @@ function Dizimista() {
           </div>
           <div className="row col-2">
             <div>
-              <label for="city">Cidade</label>
-              <input type="text" name="city" id="city" className="form-input" />
+              <label htmlFor="city">Cidade</label>
+              <input
+                type="text"
+                {...register('city')}
+                id="city"
+                className="form-input"
+              />
             </div>
             <div className="col-2">
               <div>
-                <label for="uf">UF</label>
-                <input type="text" name="uf" id="uf" className="form-input" />
+                <label htmlFor="uf">UF</label>
+                <input type="text" {...register('uf')} id="uf" className="form-input" />
               </div>
               <div>
-                <label for="zip">CEP</label>
+                <label htmlFor="zip">CEP</label>
                 <input
-                  type="number"
-                  name="zip"
+                  type="text"
+                  {...register('zip')}
                   id="zip"
                   className="form-input"
+                  onBlur={handleCep}
                 />
               </div>
             </div>
           </div>
         </form>
       </div>
+      <script type="text/javascript" src="../../Helpers/buscaCep.js"></script>
     </>
   );
 }
