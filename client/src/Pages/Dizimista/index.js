@@ -1,28 +1,44 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import "./styles.css";
 
 function Dizimista() {
+  const [ check, setCheck ] = useState(false);
+  const handleChecked = (event) => {
+    setCheck(event.target.checked)
+    handleSpouse()
+  }
+  
+  const handleSpouse = () => {
+    const spouse = document.querySelectorAll('.spouse');
+    spouse.forEach(field => {
+      field.classList.toggle('active')
+    })
+  }
+
+
   const { register, handleSubmit, setValue } = useForm();
 
   const onSubmit = (event) => {
-    console.log(event)
-  }
+    console.log(event);
+  };
 
   const handleCep = (event) => {
-    const { value } = event.target
+    const { value } = event.target;
 
     const cep = value.replace(/\D/g, "");
 
-    if (cep?.length !== 8) return; 
-    
+    if (cep?.length !== 8) return;
+
     fetch(`https://viacep.com.br/ws/${cep}/json/`)
-    .then(res => res.json()).then(data => {
-      setValue('address', data.logradouro)
-      setValue('address2', data.complemento)
-      setValue('district', data.bairro)
-      setValue('city', data.localidade)
-      setValue('uf', data.uf)
-    })
+      .then((res) => res.json())
+      .then((data) => {
+        setValue("address", data.logradouro);
+        setValue("address2", data.complemento);
+        setValue("district", data.bairro);
+        setValue("city", data.localidade);
+        setValue("uf", data.uf);
+      });
   };
 
   return (
@@ -34,49 +50,96 @@ function Dizimista() {
             <label htmlFor="name">Nome Completo</label>
             <input
               type="text"
-              name="name"
+              {...register("name")}
               id="name"
               placeholder="Nome"
               className="form-input"
             />
           </div>
-          <div className="row col-2">
+          <div className="row col-3">
             <div className="form-subitens">
-              <div>
-                <input
-                  type="radio"
-                  name="gender"
-                  id="male"
-                  value="Masculino"
-                />
-                <label htmlFor="male">Masculino</label>
-              </div>
-              <div>
-                <input
-                  type="radio"
-                  name="gender"
-                  id="female"
-                  value="Feminino"
-                />
-                <label htmlFor="female">Feminino</label>
-              </div>
+              <label htmlFor="gender">Sexo:</label>
+              <select
+                className="form-select"
+                defaultValue={''}
+                id="gender"
+                {...register("gender")}
+              >
+                <option value='' disabled>Selecione...</option>
+                <option value="male">Masculino</option>
+                <option value="female">Feminino</option>
+              </select>
             </div>
             <div className="form-subitens">
-              <label htmlFor="birthday">Data de Nascimento </label>
+              <label htmlFor="birthday">Data de Nascimento</label>
               <input
                 type="date"
-                name="birthday"
+                {...register("birthday")}
                 id="birthday"
+                className="form-date"
+              />
+            </div>
+            <div className="form-subitens">
+              <label htmlFor="married">Casado</label>
+              <input
+                type="checkbox"
+                {...register("married")}
+                id="married"
+                checked={check}
+                onChange={handleChecked}
+              />
+            </div>
+          </div>
+          <div className="row spouse">
+            <label htmlFor="spouseName">Nome Completo do Cônjuge</label>
+            <input
+              type="text"
+              {...register("spouseName")}
+              id="spouseName"
+              placeholder="Nome"
+              className="form-input"
+            />
+          </div>
+          <div className="row col-3 spouse">
+            <div className="form-subitens">
+              <label htmlFor="spouseGender">Sexo:</label>
+              <select
+                className="form-select"
+                defaultValue={''}
+                id="spouseGender"
+                {...register("spouseGender")}
+              >
+                <option value='' disabled>Selecione...</option>
+                <option value="male">Masculino</option>
+                <option value="female">Feminino</option>
+              </select>
+            </div>
+            <div className="form-subitens">
+              <label htmlFor="spouseBirthday">Data de Nascimento</label>
+              <input
+                type="date"
+                {...register("spouseBirthday")}
+                id="spouseBirthday"
                 className="form-date"
               />
             </div>
           </div>
           <div className="row col-3">
             <div>
+              <label htmlFor="zip">CEP</label>
+              <input
+                type="text"
+                {...register("zip")}
+                id="zip"
+                className="form-input"
+                onBlur={handleCep}
+              />
+            </div>
+            <div>
               <label htmlFor="address">Logradouro</label>
               <input
                 type="text"
-                {... register('address')}
+                {...register("address")}
                 id="address"
                 placeholder="Rua/Avenida"
                 className="form-input"
@@ -86,7 +149,7 @@ function Dizimista() {
               <label htmlFor="number">Número</label>
               <input
                 type="text"
-                {...register('number')}
+                {...register("number")}
                 id="number"
                 className="form-input"
               />
@@ -97,7 +160,7 @@ function Dizimista() {
               <label htmlFor="address2">Complemento</label>
               <input
                 type="text"
-                {...register('address2')}
+                {...register("address2")}
                 id="address2"
                 placeholder="Complemento"
                 className="form-input"
@@ -107,7 +170,7 @@ function Dizimista() {
               <label htmlFor="district">Bairro</label>
               <input
                 type="text"
-                {...register('district')}
+                {...register("district")}
                 id="district"
                 className="form-input"
               />
@@ -118,7 +181,7 @@ function Dizimista() {
               <label htmlFor="city">Cidade</label>
               <input
                 type="text"
-                {...register('city')}
+                {...register("city")}
                 id="city"
                 className="form-input"
               />
@@ -126,16 +189,11 @@ function Dizimista() {
             <div className="col-2">
               <div>
                 <label htmlFor="uf">UF</label>
-                <input type="text" {...register('uf')} id="uf" className="form-input" />
-              </div>
-              <div>
-                <label htmlFor="zip">CEP</label>
                 <input
                   type="text"
-                  {...register('zip')}
-                  id="zip"
+                  {...register("uf")}
+                  id="uf"
                   className="form-input"
-                  onBlur={handleCep}
                 />
               </div>
             </div>
